@@ -7,6 +7,8 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA  # Updated approach
 import os
 
+headers={ st.secrets["OPENAI_API_KEY"]}
+
 def main():
     st.title("Chat with EduLink 📚")
 
