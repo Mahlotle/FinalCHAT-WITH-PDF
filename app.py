@@ -2,8 +2,9 @@ import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
-from langchain_openai import ChatOpenAI
+from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.chat import ChatOpenAI
+
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA  # Updated approach
 import os
