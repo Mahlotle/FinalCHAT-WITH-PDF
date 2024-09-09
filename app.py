@@ -2,11 +2,13 @@ import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.chat_models import ChatOpenAI
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_openai import ChatOpenAI
+
 from langchain.chains.question_answering import load_qa_chain
-from langchain.callbacks.manager import get_openai_callback
+from langchain_community.callbacks.manager import get_openai_callback
+
 import os
 
 def main():
@@ -15,8 +17,8 @@ def main():
     # Load environment variables
     load_dotenv()
 
-    # Upload a PDF file
-    st.subheader("Upload Your PDF File (Optional)")
+    # Upload a PDF file (Optional)
+    st.subheader("Upload Your PDF File")
     pdf = st.file_uploader("Drag and drop your PDF file here or click to browse.", type='pdf')
 
     text = ""
@@ -28,7 +30,7 @@ def main():
         except Exception as e:
             st.error(f"An error occurred while processing the PDF: {e}")
 
-    # ACCEPT USER QUERIES
+    # Accept user queries
     st.subheader("Ask a Question")
     query = st.text_input("Enter your question:")
 
@@ -60,13 +62,13 @@ def main():
                         # Get answer from ChatGPT if no relevant content in PDF
                         st.write("Answer not found in the PDF...")
                         llm = ChatOpenAI(model_name='gpt-3.5-turbo')
-                        response = llm.predict(query)  # Using predict method
+                        response = llm.predict(query)
                         st.write(response)
                 else:
                     # If no PDF uploaded, default to ChatGPT response
-                    st.write("No PDF uploaded..EduLink can still Help you with whatever questions you may have")
+                    st.write("No PDF uploaded. ChatGPT will answer your question.")
                     llm = ChatOpenAI(model_name='gpt-3.5-turbo')
-                    response = llm.predict(query)  # Using predict method
+                    response = llm.predict(query)
                     st.write(response)
             except Exception as e:
                 st.error(f"An error occurred while processing your query: {e}")
