@@ -2,7 +2,7 @@ import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import ChatOpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
@@ -16,7 +16,7 @@ def main():
     load_dotenv()
 
     # Upload a PDF file
-    st.subheader("Upload Your PDF File")
+    st.subheader("Upload Your PDF File (Optional)")
     pdf = st.file_uploader("Drag and drop your PDF file here or click to browse.", type='pdf')
 
     text = ""
@@ -57,17 +57,17 @@ def main():
                             response = chain.run(input_documents=docs, question=query)
                             st.write(response)
                     else:
-                        # Get answer from ChatGPT
+                        # Get answer from ChatGPT if no relevant content in PDF
                         st.write("Answer not found in the PDF...")
                         llm = ChatOpenAI(model_name='gpt-3.5-turbo')
-                        response = llm([{"role": "user", "content": query}])
-                        st.write(response['choices'][0]['message']['content'])
+                        response = llm.predict(query)  # Using predict method
+                        st.write(response)
                 else:
-                    # Default to ChatGPT if no PDF content
+                    # If no PDF uploaded, default to ChatGPT response
+                    st.write("No PDF uploaded..EduLink can still Help you with whatever questions you may have")
                     llm = ChatOpenAI(model_name='gpt-3.5-turbo')
-                    response = llm([{"role": "user", "content": query}])
-                    st.write("Please upload a PDF.")
-                    st.write(response['choices'][0]['message']['content'])
+                    response = llm.predict(query)  # Using predict method
+                    st.write(response)
             except Exception as e:
                 st.error(f"An error occurred while processing your query: {e}")
         else:
