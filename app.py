@@ -9,7 +9,9 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain_community.callbacks.manager import get_openai_callback
 
 import os
-
+headers = {
+    "authentication": st.secrets["OPENAI_API_KEY"]
+}
 def main():
     st.title("Chat with EduLink 📚")
 
