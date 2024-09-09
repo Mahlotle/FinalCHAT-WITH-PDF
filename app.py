@@ -2,16 +2,11 @@ import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
-from langchain.chat_models import ChatOpenAI
-from langchain.chains.question_answering import load_qa_chain
-from langchain_community.callbacks.manager import get_openai_callback
-
+from langchain.chains import RetrievalQA  # Updated approach
 import os
-headers = {
-    "authentication": st.secrets["OPENAI_API_KEY"]
-}
+
 def main():
     st.title("Chat with EduLink 📚")
 
@@ -53,12 +48,12 @@ def main():
                     docs = vector_store.similarity_search(query=query, k=3)
 
                     if docs:
-                        # Get answer from the PDF
+                        # Create a QA chain using RetrievalQA
                         llm = ChatOpenAI(model_name='gpt-3.5-turbo')
-                        chain = load_qa_chain(llm=llm, chain_type="stuff")
-                        with get_openai_callback() as cb:
-                            response = chain.run(input_documents=docs, question=query)
-                            st.write(response)
+                        retriever = vector_store.as_retriever()
+                        qa_chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever)
+                        response = qa_chain({"query": query, "docs": docs})
+                        st.write(response["result"])
                     else:
                         # Get answer from ChatGPT if no relevant content in PDF
                         st.write("Answer not found in the PDF...")
