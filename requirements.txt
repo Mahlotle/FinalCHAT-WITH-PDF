@@ -1,4 +1,4 @@
-upgrade pip
+
 langchain ==  0.1.4
 langchain_community==0.2.16
 python-dotenv
